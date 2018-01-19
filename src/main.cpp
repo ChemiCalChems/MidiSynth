@@ -28,7 +28,7 @@ int main() {
 	for (unsigned int i=0; i<4; i++) {
 	}
 
-	if(wiringPiSetup() == -1) {std::cout << "Setting up wiringPi failed" << std::endl;
+	if(wiringPiSetup() == -1) std::cout << "Setting up wiringPi failed" << std::endl;
 	
 	int serial_fd;
 	if((serial_fd = serialOpen("/dev/ttyAMA0", 38400)) < 0) {
