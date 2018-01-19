@@ -1,10 +1,10 @@
 #include <iostream>
 #include "al.h"
 #include "alc.h"
-extern "C"{
+
 #include <wiringPi.h>
 #include <wiringSerial.h>
-}
+
 
 void buffering(unsigned int src) {
 	
@@ -28,8 +28,10 @@ int main() {
 	for (unsigned int i=0; i<4; i++) {
 	}
 
+	if(wiringPiSetup() == -1) {std::cout << "Setting up wiringPi failed" << std::endl;
+	
 	int serial_fd;
-	if(serial_fd = serialOpen("/dev/ttyAMA0", 31250) < 0) {
+	if((serial_fd = serialOpen("/dev/ttyAMA0", 38400)) < 0) {
 		std::cerr << "Couldn't open serial connection" << std::endl;
 	}
 
