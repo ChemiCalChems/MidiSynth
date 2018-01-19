@@ -1,8 +1,10 @@
 #include <iostream>
 #include "al.h"
 #include "alc.h"
+extern "C"{
 #include <wiringPi.h>
 #include <wiringSerial.h>
+}
 
 void buffering(unsigned int src) {
 	
@@ -15,13 +17,13 @@ int main() {
 	auto defname = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 
 	dev = alcOpenDevice(defname);
-	ctx = alcCreateContext(defname);
+	ctx = alcCreateContext(dev, NULL);
 
 	unsigned int src;
 	alGenSources(1, &src);
 
 	unsigned int buffers [4];
-	alGenBuffers(4, &buffers);
+	alGenBuffers(4, buffers);
 
 	for (unsigned int i=0; i<4; i++) {
 	}
@@ -33,7 +35,7 @@ int main() {
 
 	while(true) {
 		while(serialDataAvail(serial_fd)) {
-			std::cout << serialGetChar(fd) << '\n';
+			std::cout << serialGetchar(serial_fd) << '\n';
 		}	
 	}
 }

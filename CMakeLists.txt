@@ -2,8 +2,7 @@ project(gestion)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
-set (CMAKE_CXX_FLAGS "-std=c++14 -Werror -Wall -pthread")
-SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -lwiringPi")
+set (CMAKE_CXX_FLAGS "-std=c++14 -Wall -pthread -lwiringPi")
 
 set(SRC_FILES src/main.cpp)
 
