@@ -82,7 +82,7 @@ int main() {
 	while(true) {
 		for (int note = 0; note<128; note++) {
 			if (midi_note_current_velocities[note] != 0) {
-				std::cout << note << ": " << midi_note_current_velocities[note] << std::endl;
+				std::cout << note << ": " << (unsigned int)midi_note_current_velocities[note] << std::endl;
 			}
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
