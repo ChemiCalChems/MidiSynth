@@ -10,7 +10,7 @@
 #include <wiringPi.h>
 #include <wiringSerial.h>
 
-std::array<std::atomic<unsigned char>, 128> midi_note_current_velocities;
+std::array<unsigned char, 128> midi_note_current_velocities;
 
 unsigned char nibble(unsigned char byte, bool first = true) {
 	return first ? byte >> 4 : byte % 16;
@@ -31,6 +31,10 @@ void midi_input() {
 			bytes_read.push(serialGetchar(serial_fd));
 		}
 		while(!bytes_read.empty()) {
+			std::cout << bytes_read.front() << std::endl;
+			std::cout << nibble(bytes_read.front()) << std::endl;
+			bytes_read.pop();
+			/*
 			switch(nibble(bytes_read.front())) {
 			case 8: //1000 : noteOff
 				{
@@ -54,7 +58,7 @@ void midi_input() {
 				}
 			default:
 				bytes_read.pop();
-			}
+				}*/
 		}
 	}
 }
