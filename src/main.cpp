@@ -5,11 +5,12 @@
 #include <array>
 #include <chrono>
 #include <queue>
+#include <atomic>
 
 #include <wiringPi.h>
 #include <wiringSerial.h>
 
-std::array<unsigned char, 128> midi_note_current_velocities = {0};
+std::array<std::atomic<unsigned char>, 128> midi_note_current_velocities;
 
 unsigned char nibble(unsigned char byte, bool first = true) {
 	return first ? byte >> 4 : byte % 16;
