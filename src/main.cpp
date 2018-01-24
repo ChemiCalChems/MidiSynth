@@ -31,11 +31,8 @@ void midi_input() {
 			bytes_read.push(serialGetchar(serial_fd));
 		}
 		while(!bytes_read.empty()) {
-			std::cout << bytes_read.front() << std::endl;
-			std::cout << nibble(bytes_read.front()) << std::endl;
-			bytes_read.pop();
-			/*
-			switch(nibble(bytes_read.front())) {
+			auto nib = nibble(bytes_read.front());
+			switch(nib) {
 			case 8: //1000 : noteOff
 				{
 					unsigned char key, velocity;
@@ -58,7 +55,7 @@ void midi_input() {
 				}
 			default:
 				bytes_read.pop();
-				}*/
+			}
 		}
 	}
 }
