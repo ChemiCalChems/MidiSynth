@@ -34,7 +34,6 @@ void midi_input() {
 
 		bool keepReading = true;	
 		while (keepReading && !bytes_read.empty()) {
-			std::cout << bytes_read.size() << std::endl;
 			auto byte = bytes_read.front();
 			
 			switch(nibble(byte)) {
@@ -44,13 +43,13 @@ void midi_input() {
 						keepReading = false;
 						break;
 					}
-					std::cout << "note off" << std::endl;
 					bytes_read.pop();
+
 					unsigned char key, velocity;
 					key = bytes_read.front(); bytes_read.pop();
 					velocity = bytes_read.front(); bytes_read.pop();
-
 					midi_note_current_velocities[key] = 0;
+
 					break;
 				}
 			case 9: //1001 : noteOn
@@ -60,11 +59,12 @@ void midi_input() {
 						break;
 					}
 					bytes_read.pop();
+					
 					unsigned char key, velocity;
 					key = bytes_read.front(); bytes_read.pop();
 					velocity = bytes_read.front(); bytes_read.pop();
-
 					midi_note_current_velocities[key] = velocity;
+
 					break;
 				}
 			default: bytes_read.pop();
