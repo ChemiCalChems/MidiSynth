@@ -34,6 +34,7 @@ void midi_input() {
 
 		bool keepReading = true;	
 		while (keepReading && !bytes_read.empty()) {
+			std::cout << bytes_read.size() << std::endl;
 			auto byte = bytes_read.front();
 			
 			switch(nibble(byte)) {
