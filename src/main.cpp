@@ -31,10 +31,10 @@ void midi_input() {
 			bytes_read.push(serialGetchar(serial_fd));
 		}
 		while(!bytes_read.empty()) {
-			auto nib = nibble(bytes_read.front());
+			auto byte = bytes_read.front();
 			bytes_read.pop();
 			
-			switch(nib) {
+			switch(nibble(byte)) {
 			case 8: //1000 : noteOff
 				{
 					unsigned char key, velocity;
