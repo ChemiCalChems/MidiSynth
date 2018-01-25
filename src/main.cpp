@@ -44,7 +44,7 @@ void midi_input() {
 						keepReading = false;
 						break;
 					}
-					
+					std::cout << "note off" << std::endl;
 					unsigned char key, velocity;
 					key = bytes_read.front(); bytes_read.pop();
 					velocity = bytes_read.front(); bytes_read.pop();
