@@ -33,7 +33,7 @@ void midi_input() {
 		}
 
 		bool keepReading = true;	
-		while (keepReading) {
+		while (keepReading && !bytes_read.empty()) {
 			auto byte = bytes_read.front();
 			
 			switch(nibble(byte)) {
