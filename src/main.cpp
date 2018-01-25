@@ -32,6 +32,8 @@ void midi_input() {
 		}
 		while(!bytes_read.empty()) {
 			auto nib = nibble(bytes_read.front());
+			bytes_read.pop();
+			/*
 			switch(nib) {
 			case 8: //1000 : noteOff
 				{
@@ -56,6 +58,7 @@ void midi_input() {
 			default:
 				bytes_read.pop();
 			}
+			*/
 		}
 	}
 }
@@ -82,14 +85,12 @@ int main() {
 
 	std::thread midi(midi_input);
 	while(true) {
-		/*
 		for (int note = 0; note<128; note++) {
 			if (midi_note_current_velocities[note] != 0) {
 				std::cout << note << ": " << (unsigned int)midi_note_current_velocities[note] << std::endl;
 			}
 		}
 		std::this_thread::sleep_for(std::chrono::seconds(1));
-		*/
 	}
 	
 }
