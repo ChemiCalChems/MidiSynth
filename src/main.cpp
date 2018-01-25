@@ -28,15 +28,22 @@ void midi_input() {
 	
 	while(true) {
 		while(serialDataAvail(serial_fd)) {
-			bytes_read.push(serialGetchar(serial_fd));
+			auto byte = serialGetchar(serial_fd);
+			if (byte != 254) bytes_read.push(byte);
 		}
-		while(!bytes_read.empty()) {
+
+		bool keepReading = true;	
+		while (keepReading) {
 			auto byte = bytes_read.front();
-			bytes_read.pop();
 			
 			switch(nibble(byte)) {
 			case 8: //1000 : noteOff
 				{
+					if (bytes_read.size() < 3) {
+						keepReading = false;
+						break;
+					}
+					
 					unsigned char key, velocity;
 					key = bytes_read.front(); bytes_read.pop();
 					velocity = bytes_read.front(); bytes_read.pop();
@@ -46,6 +53,10 @@ void midi_input() {
 				}
 			case 9: //1001 : noteOn
 				{
+					if (bytes_read.size() < 3) {
+						keepReading = false;
+						break;
+					}
 					unsigned char key, velocity;
 					key = bytes_read.front(); bytes_read.pop();
 					velocity = bytes_read.front(); bytes_read.pop();
