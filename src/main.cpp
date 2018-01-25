@@ -33,12 +33,11 @@ void midi_input() {
 		while(!bytes_read.empty()) {
 			auto nib = nibble(bytes_read.front());
 			bytes_read.pop();
-			/*
+			
 			switch(nib) {
 			case 8: //1000 : noteOff
 				{
 					unsigned char key, velocity;
-					bytes_read.pop();
 					key = bytes_read.front(); bytes_read.pop();
 					velocity = bytes_read.front(); bytes_read.pop();
 
@@ -48,17 +47,13 @@ void midi_input() {
 			case 9: //1001 : noteOn
 				{
 					unsigned char key, velocity;
-					bytes_read.pop();
 					key = bytes_read.front(); bytes_read.pop();
 					velocity = bytes_read.front(); bytes_read.pop();
 
 					midi_note_current_velocities[key] = velocity;
 					break;
 				}
-			default:
-				bytes_read.pop();
 			}
-			*/
 		}
 	}
 }
