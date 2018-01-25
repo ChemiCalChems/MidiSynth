@@ -64,6 +64,7 @@ void midi_input() {
 					midi_note_current_velocities[key] = velocity;
 					break;
 				}
+			default: bytes_read.pop();
 			}
 		}
 	}
