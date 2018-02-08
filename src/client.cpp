@@ -1,14 +1,8 @@
-#include <iostream>
-#include "al.h"
-#include "alc.h"
-#include <thread>
-#include <array>
-#include <chrono>
+#include <boost/asio.hpp>
 #include <queue>
-#include <atomic>
-
-#include <wiringPi.h>
-#include <wiringSerial.h>
+#include <array>
+#include <iostream>
+#include <thread>
 
 std::array<unsigned char, 128> midi_note_current_velocities;
 
@@ -16,19 +10,14 @@ unsigned char nibble(unsigned char byte, bool first = true) {
 	return first ? byte >> 4 : byte % 16;
 }
 
-void midi_input() {
-	if(wiringPiSetup() == -1) std::cout << "Setting up wiringPi failed" << std::endl;
-	
-	int serial_fd;
-	if((serial_fd = serialOpen("/dev/ttyAMA0", 38400)) < 0) {
-		std::cerr << "Couldn't open serial connection" << std::endl;
-	}
-	
+void midi_input(boost::asio::ip::tcp::socket* socket) {
 	std::queue<unsigned char> bytes_read;
 	
 	while(true) {
-		while(serialDataAvail(serial_fd)) {
-			auto byte = serialGetchar(serial_fd);
+		while(socket->available() > 0) {
+			std::cout << "byte get" << std::endl;
+			char byte;
+			socket->read_some(boost::asio::buffer(&byte, 1));
 			if (byte != 254) bytes_read.push(byte);
 		}
 
@@ -73,7 +62,7 @@ void midi_input() {
 	}
 }
 
-int main() {
+int main(int argc, char** argv) {
 	/*
 	ALCdevice* dev = NULL;
 	ALCcontext* ctx = NULL;
@@ -93,7 +82,21 @@ int main() {
 	}
 	*/
 
-	std::thread midi(midi_input);
+	boost::asio::io_service io_s;
+	
+	boost::asio::ip::tcp::socket socket{io_s};
+	
+	boost::asio::ip::tcp::endpoint endpoint;
+	endpoint.address(boost::asio::ip::address::from_string("192.168.1.41"));
+	endpoint.port(5001);
+
+	std::cout << endpoint << std::endl;
+	
+	socket.connect(endpoint);
+
+	std::thread io_service_thread ([&io_s](){io_s.run();});
+	std::thread midi_thread(midi_input, &socket);
+	
 	while(true) {
 		for (int note = 0; note<128; note++) {
 			if (midi_note_current_velocities[note] != 0) {
