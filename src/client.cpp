@@ -8,10 +8,9 @@
 #include <Vc/Vc>
 #include <RtAudio.h>
 #include <future>
+#include <sndfile.h>
 
 bool running = true;
-
-std::queue<float> sample_buffer;
 
 unsigned char nibble(unsigned char byte, bool first = true) {
 	return first ? byte >> 4 : byte % 16;
@@ -67,19 +66,25 @@ void midi_input(boost::asio::ip::tcp::socket* socket) {
 }
 
 double t = 0;
+SNDFILE* file;
 
 int streamCallback (void* output_buf, void* input_buf, unsigned int frame_count, double time_info, unsigned int stream_status, void* userData) {
 	if(stream_status) std::cout << "Stream underflow" << std::endl;
 	float* out = (float*) output_buf;
 	for (int i = 0; i<frame_count; i++) {
-		*out++ = Synthesizer::get_sample(t); 
+		float sample = Synthesizer::get_sample(t);
+		
+		*out++ = sample;
+
+		sf_writef_float(file, &sample, 1 /*frame*/);
+		
 		t += (double)1/(double)48000;
+		if (t > 5) t = 0;
 	}
 	return 0;
 }
 
 int Vc_CDECL main(int argc, char** argv) {
-	std::cout << Vc::float_v::size() << std::endl;
 	boost::asio::io_service io_s;
 	
 	boost::asio::ip::tcp::socket socket{io_s};
@@ -99,14 +104,21 @@ int Vc_CDECL main(int argc, char** argv) {
 			return 1/3.14159268/n;
 		});
 		
-	/*
+	
 	std::generate(Synthesizer::harmonics.begin(), Synthesizer::harmonics.end(), [n=0]() mutable -> float {
 			n++;
 			if (n%2 == 0) return 0;
 			return 4/n/3.14159268;
 		});
+
+
+	SF_INFO file_info;
+	file_info.samplerate = 48000;
+	file_info.channels = 1;
+	file_info.format = SF_FORMAT_WAV | SF_FORMAT_FLOAT;
+
+	file = sf_open("output.wav", SFM_WRITE, &file_info);
 	
-	*/
 	std::thread io_service_thread ([&io_s](){io_s.run();});
 	std::thread midi_thread(midi_input, &socket);
 
@@ -127,13 +139,17 @@ int Vc_CDECL main(int argc, char** argv) {
 
 	dac.startStream();
 	
-	std::promise<void>().get_future().wait();
-	//std::this_thread::sleep_for(std::chrono::seconds(30));
+	//std::promise<void>().get_future().wait();
+
+	std::cin.get();
 
 	running = false;
+
+	dac.stopStream();
 	
 	io_service_thread.join();
 	midi_thread.join();
 
-	dac.stopStream();
+	std::cout << sf_strerror(file) << std::endl;
+	std::cout << sf_close(file) << std::endl;
 }
