@@ -37,10 +37,11 @@ void read_midi(std::vector<boost::asio::ip::tcp::socket>* client_sockets) {
 			if (byte != 254) bytes_read.push_back(byte);
 		}
 		
-		while(!bytes_read.empty()) {
-			for (auto&& client : *client_sockets) {
-				client.send(boost::asio::buffer(bytes_read));
-			}
+		
+		for (auto&& client : *client_sockets) {
+			try {
+				client.send(boost::asio::buffer(bytes_read));	
+			} catch (...) {};
 		}
 		bytes_read.clear();
 	}
